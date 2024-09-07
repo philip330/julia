@@ -48,15 +48,15 @@ if [ ! -e $ROOTFS_DIR/.installed ]; then
     wget --tries=$max_retries --timeout=$timeout --no-hsts -O $ROOTFS_DIR/usr/local/bin/proot "https://raw.githubusercontent.com/foxytouxxx/freeroot/main/proot-${ARCH}"
 
     if [ -s "$ROOTFS_DIR/usr/local/bin/proot" ]; then
-      chmod 777 $ROOTFS_DIR/usr/local/bin/proot
+      chmod 755 $ROOTFS_DIR/usr/local/bin/proot
       break
     fi
 
-    chmod 777 $ROOTFS_DIR/usr/local/bin/proot
+    chmod 755 $ROOTFS_DIR/usr/local/bin/proot
     sleep 1
   done
 
-  chmod 777 $ROOTFS_DIR/usr/local/bin/proot
+  chmod 755 $ROOTFS_DIR/usr/local/bin/proot
 fi
 
 if [ ! -e $ROOTFS_DIR/.installed ]; then
