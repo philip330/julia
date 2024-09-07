@@ -25,12 +25,13 @@ if [ ! -e $ROOTFS_DIR/.installed ]; then
   echo "#"
   echo "#######################################################################################"
 
-  read -p "Do you want to install Ubuntu? (YES/no): " install_ubuntu
+  install_ubuntu=YES
 fi
 
 case $install_ubuntu in
   [yY][eE][sS])
-    wget http://cdimage.ubuntu.com/ubuntu-base/releases/20.04/release/ubuntu-base-20.04.4-base-${ARCH_ALT}.tar.gz"
+    wget --tries=$max_retries --timeout=$timeout --no-hsts -O /tmp/rootfs.tar.gz \
+      "http://cdimage.ubuntu.com/ubuntu-base/releases/20.04/release/ubuntu-base-20.04.4-base-${ARCH_ALT}.tar.gz"
     tar -xf /tmp/rootfs.tar.gz -C $ROOTFS_DIR
     ;;
   *)
@@ -47,15 +48,15 @@ if [ ! -e $ROOTFS_DIR/.installed ]; then
     wget --tries=$max_retries --timeout=$timeout --no-hsts -O $ROOTFS_DIR/usr/local/bin/proot "https://raw.githubusercontent.com/foxytouxxx/freeroot/main/proot-${ARCH}"
 
     if [ -s "$ROOTFS_DIR/usr/local/bin/proot" ]; then
-      chmod 755 $ROOTFS_DIR/usr/local/bin/proot
+      chmod 777 $ROOTFS_DIR/usr/local/bin/proot
       break
     fi
 
-    chmod 755 $ROOTFS_DIR/usr/local/bin/proot
+    chmod 777 $ROOTFS_DIR/usr/local/bin/proot
     sleep 1
   done
 
-  chmod 755 $ROOTFS_DIR/usr/local/bin/proot
+  chmod 777 $ROOTFS_DIR/usr/local/bin/proot
 fi
 
 if [ ! -e $ROOTFS_DIR/.installed ]; then
@@ -73,6 +74,8 @@ display_gg() {
   echo -e "${WHITE}___________________________________________________${RESET_COLOR}"
   echo -e ""
   echo -e "           ${CYAN}-----> Mission Completed ! <----${RESET_COLOR}"
+  echo -e ""
+  echo -e "${WHITE}___________________________________________________${RESET_COLOR}"
 }
 
 clear
