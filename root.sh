@@ -1,86 +1,82 @@
-#!/bin/sh
+#!/system/bin/sh
 
-ROOTFS_DIR=$(pwd)
-export PATH=$PATH:~/.local/usr/bin
-max_retries=50
-timeout=1
-ARCH=$(uname -m)
+##Author : Paranoid Ninja
+##Email  : paranoidninja@protonmail.com
+##Descr  : Script to replace Kingroot with SuperSU (works with Android 4.x, 5.x and 6.x). This is a shell script (not a bash) written specifically to replace Kingroot application with SuperSU from Chainfire. You would also require the 'su' binary from my other gist; and SuperSU and BusyBox from playstore. Once all of the 3 are downloaded, copy them to a single folder and execute it from an android terminal emulator using $sh root.sh.
 
-if [ "$ARCH" = "x86_64" ]; then
-  ARCH_ALT=amd64
-elif [ "$ARCH" = "aarch64" ]; then
-  ARCH_ALT=arm64
-else
-  printf "Unsupported CPU architecture: ${ARCH}"
-  exit 1
-fi
+echo ---------------------------------------------------------
+echo ---------Originally Written by ChainFire for 4.4---------
+echo ------ Modified by Paranoid Ninja for 5.x and 6.x -------
+echo ---------------------------------------------------------
 
-if [ ! -e $ROOTFS_DIR/.installed ]; then
-  echo "#######################################################################################"
-  echo "#"
-  echo "#                                      Foxytoux INSTALLER"
-  echo "#"
-  echo "#                           Copyright (C) 2024, RecodeStudios.Cloud"
-  echo "#"
-  echo "#"
-  echo "#######################################################################################"
 
-  install_ubuntu=YES
-fi
-
-case $install_ubuntu in
-  [yY][eE][sS])
-    wget --tries=$max_retries --timeout=$timeout --no-hsts -O /tmp/rootfs.tar.gz \
-      "http://cdimage.ubuntu.com/ubuntu-base/releases/20.04/release/ubuntu-base-20.04.4-base-${ARCH_ALT}.tar.gz"
-    tar -xf /tmp/rootfs.tar.gz -C $ROOTFS_DIR
-    ;;
-  *)
-    echo "Skipping Ubuntu installation."
-    ;;
-esac
-
-if [ ! -e $ROOTFS_DIR/.installed ]; then
-  mkdir $ROOTFS_DIR/usr/local/bin -p
-  wget --tries=$max_retries --timeout=$timeout --no-hsts -O $ROOTFS_DIR/usr/local/bin/proot "https://raw.githubusercontent.com/foxytouxxx/freeroot/main/proot-${ARCH}"
-
-  while [ ! -s "$ROOTFS_DIR/usr/local/bin/proot" ]; do
-    rm $ROOTFS_DIR/usr/local/bin/proot -rf
-    wget --tries=$max_retries --timeout=$timeout --no-hsts -O $ROOTFS_DIR/usr/local/bin/proot "https://raw.githubusercontent.com/foxytouxxx/freeroot/main/proot-${ARCH}"
-
-    if [ -s "$ROOTFS_DIR/usr/local/bin/proot" ]; then
-      chmod 755 $ROOTFS_DIR/usr/local/bin/proot
-      break
-    fi
-
-    chmod 755 $ROOTFS_DIR/usr/local/bin/proot
-    sleep 1
-  done
-
-  chmod 755 $ROOTFS_DIR/usr/local/bin/proot
-fi
-
-if [ ! -e $ROOTFS_DIR/.installed ]; then
-  printf "nameserver 1.1.1.1\nnameserver 1.0.0.1" > ${ROOTFS_DIR}/etc/resolv.conf
-  rm -rf /tmp/rootfs.tar.xz /tmp/sbin
-  touch $ROOTFS_DIR/.installed
-fi
-
-CYAN='\e[0;36m'
-WHITE='\e[0;37m'
-
-RESET_COLOR='\e[0m'
-
-display_gg() {
-  echo -e "${WHITE}___________________________________________________${RESET_COLOR}"
-  echo -e ""
-  echo -e "           ${CYAN}-----> Mission Completed ! <----${RESET_COLOR}"
-  echo -e ""
-  echo -e "${WHITE}___________________________________________________${RESET_COLOR}"
-}
-
-clear
-display_gg
-
-$ROOTFS_DIR/usr/local/bin/proot \
-  --rootfs="${ROOTFS_DIR}" \
-  -0 -w "/root" -b /dev -b /sys -b /proc -b /etc/resolv.conf --kill-on-exit
+mount -o rw,remount /system
+am kill com.kingroot.RushRoot
+pm uninstall com.kingroot.RushRoot
+am kill com.kingroot.kinguser
+pm uninstall com.kingroot.kinguser
+mount -o rw,remount /system
+rm /system/app/Kinguser.apk >/dev/null
+rm -r /system/app/Kinguser >/dev/null
+am kill com.kingroot.master
+pm uninstall com.kingroot.master >/dev/null
+cat sdcard/busybox > /system/bin/busybox
+chown 0.1000 /system/bin/busybox
+chmod 0755 /system/bin/busybox
+busybox chattr -ia /system/xbin/ku.sud
+mount -o rw,remount /system
+rm /system/xbin/ku.sud
+busybox chattr -ia /system/xbin/kugote >/dev/null 2>&1
+mount -o rw,remount /system
+rm /system/xbin/kugote >/dev/null 2>&1
+busybox chattr -ia /system/xbin/su
+rm /system/xbin/su
+busybox chattr -ia /system/xbin/supolicy
+rm /system/xbin/supolicy
+busybox chattr -ia /system/xbin/pidof >/dev/null 2>&1
+rm /system/xbin/pidof >/dev/null 2>&1
+cat /sdcard/su > /system/xbin/su
+cat /sdcard/su > /system/xbin/daemonsu
+cat /sdcard/su > /system/xbin/sugote
+cat /system/bin/sh > /system/xbin/sugote-mksh
+chown 0.0 /system/xbin/su
+chmod 6755 /system/xbin/su
+chown 0.0 /system/xbin/sugote
+chmod 0755 /system/xbin/sugote
+chown 0.0 /system/xbin/sugote-mksh
+chmod 0755 /system/xbin/sugote-mksh
+chown 0.0 /system/xbin/daemonsu
+chmod 0755 /system/xbin/daemonsu
+daemonsu -d
+rm -r /data/app/{com.kingroot.RushRoot-1, com.kingroot.master-1, com.kingroot.kinguser-1} >/dev/null 2>&1
+rm -r /data/data/{com.kingroot.RushRoot, com.kingroot.kinguser, com.kingroot.master} >/dev/null 2>&1
+rm -r /data/data-lib/{com.kingroot.RushRoot, com.kingroot.kinguser, king} >/dev/null 2>&1
+busybox chattr -ia /system/bin/.usr/.ku
+rm /system/bin/.usr/.ku
+busybox chattr -ia /system/bin/rt.sh
+rm /system/bin/rt.sh
+busybox chattr -ia /system/bin/su
+rm /system/bin/su
+busybox chattr -ia /system/bin/ddexe-ku.bak >/dev/null 2>&1
+rm /system/bin/ddexe-ku.bak >/dev/null 2>&1
+busybox chattr -ia /system/bin/ddexe
+rm /system/bin/ddexe
+busybox chattr -ia /system/bin/ddexe_real >/dev/null 2>&1
+rm /system/bin/ddexe_real >/dev/null 2>&1
+busybox chattr -ia /system/bin/install-recovery.sh
+rm /system/bin/install-recovery.sh
+busybox chattr -ia /system/bin/install-recovery.sh-ku.bak
+rm /system/bin/install-recovery.sh-ku.bak
+pm install /sdcard/superuser.apk
+busybox chattr -ia /system/usr/iku/isu
+rm -r /system/usr/iku
+rm -r /dev/reportroot
+busybox chattr -ia /system/etc/install-recovery.sh
+rm /system/etc/install-recovery.sh
+busybox chattr -ia /system/etc/install_recovery.sh
+rm -r /system/app/Kinguser
+rm -r /data/data-lib/king
+rm -r /sdcard/Kingroot
+rm /sdcard/kr-stock-conf >/dev/null 2>&1
+am start -a android.intent.action.MAIN -n eu.chainfire.supersu/.MainActivity >/dev/null
+sleep 2
